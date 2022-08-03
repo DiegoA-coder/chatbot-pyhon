@@ -4,3 +4,4 @@ class BetterNewsClient:
   @classmethod
   def perform(cls):
     return BetterNewsReader.perform()
+    

@@ -4,3 +4,4 @@ class LatestClient:
   @classmethod
   def perform(cls):
     return LatestReader.perform()
+    
