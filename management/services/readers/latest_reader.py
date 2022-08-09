@@ -6,19 +6,15 @@ class LatestReader(Reader):
   @classmethod
   def perform(cls):
     link = "https://www.tvazteca.com/aztecanoticias?_renderer=json"
-    return cls.find(RequestService.perform(link))
+    return cls().find(RequestService.perform(link))
 
-  @classmethod
-  def find(cls,jsonRequest):
-      cls.empty_lists()
-
+  def find(self,jsonRequest):
       if(jsonRequest != None):
         try:
           mains = jsonRequest["main"]
         except Exception as err:
           print('Error occurred in get : ',err)  
-          return cls.dictionary;
-
+          return self.dictionary
         for itemResult in mains:
           try:
             main = itemResult["main"]
@@ -38,9 +34,7 @@ class LatestReader(Reader):
                     typeItem = item["type"]
                     itemdictionary = {"contentId" : contentId, "date" : date, "link" : link,
                       "section" : section, "title" : title}
-                    cls.save_item(itemdictionary, typeItem)
+                    self.save_item(itemdictionary, typeItem)
           except Exception as err:
             print('Error occurred in item: ', err)
-      cls.update_dictionary()
-      return cls.dictionary
-      
+      return self.__class__.translate_keys(self.dictionary)              

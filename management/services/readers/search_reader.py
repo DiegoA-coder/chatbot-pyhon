@@ -7,19 +7,15 @@ class SearchReader(Reader):
   def perform(cls, word):
     link = "https://www.tvazteca.com/aztecanoticias/busqueda?q=" + word + \
             "&_renderer=json"
-    return cls.find(RequestService.perform(link))
+    return cls().find(RequestService.perform(link))
 
-  @classmethod
-  def find(cls, jsonRequest):
-      cls.empty_lists()
-
+  def find(self, jsonRequest):
       if(jsonRequest != None):
         try:
           results = jsonRequest["results"]
         except Exception as err:
           print('Error occurred: ', err)  
-          return cls.dictionary;
-
+          return self.dictionary
         for item in results:
           try:
             contentId = item["contentId"]
@@ -28,17 +24,14 @@ class SearchReader(Reader):
             section = item["sectionTag"][0]["title"]
             title = item["title"]
             typeItem = item["type"]
-
             if(typeItem == "video"):
               jsonVideo = RequestService.perform(item["url"] + "?_renderer=json")
               videoId = jsonVideo["player"][0]["videoId"]
             else:
               videoId = ""
-
             itemdictionary = {"contentId" : contentId, "date" : date, "link" : link,
               "section" : section, "title" : title, "video" : videoId}
-            cls.save_item(itemdictionary, typeItem)
+            self.save_item(itemdictionary, typeItem)
           except Exception as err:
             print('Error occurred: ', err)
-      cls.update_dictionary()
-      return cls.dictionary
+      return self.__class__.translate_keys(self.dictionary)
